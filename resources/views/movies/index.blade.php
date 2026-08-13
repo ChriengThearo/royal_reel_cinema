@@ -38,7 +38,7 @@
     <div class="container ps-4 ps-lg-5">
         <div class="col-lg-6">
             <p class="text-white-50 mb-1 small text-uppercase">Featured Film</p>
-            <h1 class="hero-title mb-3">Monsters, INC.</h1>
+            <h1 class="hero-title mb-3">Thearo, INC.</h1>
             <p class="hero-desc mb-4">
                 Animated film that explores the world of Monstropolis,
                 where monsters generate their city's power by scaring children at night.
