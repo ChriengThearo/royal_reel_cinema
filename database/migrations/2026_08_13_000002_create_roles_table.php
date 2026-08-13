@@ -8,20 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('tbl_permissions', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
-            $table->string('code', 64);
-            $table->string('name', 120);
+            $table->string('name', 80);
             $table->string('description', 255)->nullable();
-            $table->string('module', 80)->nullable();
-            $table->text('aliases')->nullable();
 
-            $table->unique('code', 'ix_tbl_permissions_code');
+            $table->unique('name', 'roles_name_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('tbl_permissions');
+        Schema::dropIfExists('roles');
     }
 };

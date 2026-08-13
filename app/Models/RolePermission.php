@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class RolePermission extends Pivot
 {
-    protected $table = 'tbl_role_permissions';
+    protected $table = 'role_permissions';
 
     public $timestamps = false;
 
