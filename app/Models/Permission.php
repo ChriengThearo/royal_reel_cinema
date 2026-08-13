@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class Permission extends Model
+{
+    protected $table = 'tbl_permissions';
+
+    public $timestamps = false;
+
+    protected $fillable = ['code', 'name', 'description', 'module', 'aliases'];
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'tbl_role_permissions', 'permission_id', 'role_id');
+    }
+}
