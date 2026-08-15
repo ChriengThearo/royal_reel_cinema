@@ -57,7 +57,7 @@
         <div class="ms-auto d-flex align-items-center gap-3">
             @auth
                 <span class="text-white-50 small d-none d-lg-inline">
-                    <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
+                    <i class="bi bi-person-circle me-1"></i>{{ Auth::user()?->name ?? '' }}
                 </span>
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
@@ -87,7 +87,7 @@
     </div>
 
     <p class="mt-4" style="color:rgba(255,255,255,0.5); font-size:0.85rem;">
-        Watching as <strong class="text-white">{{ Auth::user()->name }}</strong>
+        Watching as <strong class="text-white">{{ Auth::user()?->name ?? 'Guest' }}</strong>
     </p>
 </div>
 

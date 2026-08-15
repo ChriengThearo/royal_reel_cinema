@@ -16,13 +16,15 @@ class AuthController extends Controller
     public function showLoginForm(Request $request): View|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->intended('/');
+            return redirect('/');
         }
 
-        // Carry the intended URL into the view so the form can re-embed it
-        return view('auth.login', [
-            'intended' => $request->query('intended', session()->pull('url.intended', '/')),
-        ]);
+        // Laravel's auth middleware stores the intended URL as 'url.intended' in the session.
+        // We read it and pass it to the view so the form can embed it in a hidden field.
+        // session()->pull() removes it so it does not interfere with redirect()->intended() later.
+        $intended = session()->pull('url.intended', $request->query('intended', '/'));
+
+        return view('auth.login', compact('intended'));
     }
 
     /**
@@ -40,15 +42,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            // Redirect to the intended URL that was embedded in the form.
+            // We use a simple redirect() rather than redirect()->intended() to avoid
+            // any stale session state from a previous request.
             $intended = $request->input('intended', '/');
+            $intended = (empty($intended) || $intended === 'null') ? '/' : $intended;
 
-            return redirect($intended ?: '/');
+            return redirect($intended);
         }
 
         return back()
             ->withInput($request->only('email', 'intended'))
-            ->withErrors(['email' => 'These credentials do not match our records.'])
-            ->with('active_tab', 'login');
+            ->withErrors(['email' => 'These credentials do not match our records.']);
     }
 
     /**
@@ -66,15 +71,16 @@ class AuthController extends Controller
         $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
-            'password' => $validated['password'], // Model casts it as hashed
+            'password' => $validated['password'],
         ]);
 
         Auth::login($user);
         $request->session()->regenerate();
 
         $intended = $request->input('intended', '/');
+        $intended = (empty($intended) || $intended === 'null') ? '/' : $intended;
 
-        return redirect($intended ?: '/');
+        return redirect($intended);
     }
 
     /**
