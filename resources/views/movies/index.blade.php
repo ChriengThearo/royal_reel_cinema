@@ -12,7 +12,7 @@
 
 <!-- ─────────────── Navbar ─────────────── -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 z-3 px-4 px-lg-5 pt-3">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{{ route('home') }}">
         <span><i class="bi bi-film me-1"></i>RoyalReel</span>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -28,7 +28,28 @@
         <div class="ms-auto d-flex align-items-center gap-3">
             <i class="bi bi-search fs-5" style="cursor:pointer;"></i>
             <i class="bi bi-bell fs-5" style="cursor:pointer;"></i>
-            <img src="https://i.pravatar.cc/32" alt="avatar" class="rounded-circle" width="32" height="32" style="cursor:pointer;">
+
+            @auth
+                {{-- Authenticated: show name + logout --}}
+                <span class="text-white-50 small d-none d-lg-inline">
+                    <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
+                </span>
+                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                    @csrf
+                    <button type="submit"
+                            class="btn btn-sm"
+                            style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
+                        Sign Out
+                    </button>
+                </form>
+            @else
+                {{-- Guest: show Sign In button --}}
+                <a href="{{ route('login') }}"
+                   class="btn btn-sm"
+                   style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
+                    <i class="bi bi-person me-1"></i>Sign In
+                </a>
+            @endauth
         </div>
     </div>
 </nav>
@@ -44,12 +65,14 @@
                 where monsters generate their city's power by scaring children at night.
             </p>
             <div class="d-flex gap-3 flex-wrap">
-                <button class="btn btn-watch d-flex align-items-center gap-2">
+                <a href="{{ route('movies.show', 'featured') }}"
+                   class="btn btn-watch d-flex align-items-center gap-2 text-decoration-none">
                     <i class="bi bi-play-fill"></i> Watch Now
-                </button>
-                <button class="btn btn-details d-flex align-items-center gap-2">
+                </a>
+                <a href="{{ route('movies.show', 'featured') }}"
+                   class="btn btn-details d-flex align-items-center gap-2 text-decoration-none">
                     Details <i class="bi bi-chevron-right"></i>
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -78,53 +101,53 @@
     </div>
     <div class="scroll-row">
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'the-good-dinosaur') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BNDk3NjMwMDMtNDcwNC00NTkwLTk1ZTMtNGYwMzdmMzZlMzdjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="The Good Dinosaur">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">The Good Dinosaur</p>
                 <p class="movie-card-meta">2015 · Animation</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'aladdin') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BOGJmNGM1ZmMtYjU3OS00OWYyLWE4ZWYtNTJmNjM2ZjBlMGFiXkEyXkFqcGc@._V1_.jpg" alt="Aladdin">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">Aladdin</p>
                 <p class="movie-card-meta">1992 · Animation</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'luca') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BZDJhNjI4ZGItOTM5Mi00YTQ4LWFlZmUtYTQ3OTI3ZGJmMWYyXkEyXkFqcGc@._V1_.jpg" alt="Luca">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">Luca</p>
                 <p class="movie-card-meta">2021 · Animation</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'tangled') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BMTkwMTc0ODYxNl5BMl5BanBnXkFtZTcwNDA3NzYxMw@@._V1_.jpg" alt="Tangled">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">Tangled</p>
                 <p class="movie-card-meta">2010 · Animation</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'coco') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BZjZhYzFiZTUtNTNjZi00YTI4LWE2ZTEtYThkNTA3NDFlMDkwXkEyXkFqcGc@._V1_.jpg" alt="Coco">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">Coco</p>
                 <p class="movie-card-meta">2017 · Animation</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card">
+        <a href="{{ route('movies.show', 'moana') }}" class="movie-card text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BNzgxMzc1MjYtZjMwZi00OGFmLTkwOWEtMWZkMmJhN2JmYWM1XkEyXkFqcGc@._V1_.jpg" alt="Moana">
             <div class="movie-card-overlay">
                 <p class="movie-card-title">Moana</p>
                 <p class="movie-card-meta">2016 · Animation</p>
             </div>
-        </div>
+        </a>
 
     </div>
 </section>
@@ -137,7 +160,7 @@
     </div>
     <div class="scroll-row">
 
-        <div class="movie-card card-lg">
+        <a href="{{ route('movies.show', 'finding-nemo') }}" class="movie-card card-lg text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BNWIyNmIxNWEtNmNhZC00ZjgwLWJhZWYtNTdjZjdmZmQ0NTUwXkEyXkFqcGc@._V1_.jpg" alt="Finding Nemo">
             <div class="movie-card-overlay">
                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -149,9 +172,9 @@
                 </div>
                 <p class="movie-card-meta mt-1">65% watched</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card card-lg">
+        <a href="{{ route('movies.show', 'up') }}" class="movie-card card-lg text-decoration-none">
             <img src="https://m.media-amazon.com/images/M/MV5BMDU2ZWJlMjktMTRhMy00ZTA5LWEzNDgtYmNmZTEwZTViZWJkXkEyXkFqcGc@._V1_.jpg" alt="Up">
             <div class="movie-card-overlay">
                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -163,10 +186,10 @@
                 </div>
                 <p class="movie-card-meta mt-1">30% watched</p>
             </div>
-        </div>
+        </a>
 
-        <div class="movie-card card-lg">
-            <img src="https://m.media-amazon.com/images/M/MV5BOTgxMDQwMDk0OF5BMl5BanBnXkFtZTgwNjU5OTg2NDE@._V1_.jpg" alt="Inside Out">
+        <a href="{{ route('movies.show', 'inside-out') }}" class="movie-card card-lg text-decoration-none">
+            <img src="https://m.media-amazon.com/images/M/MV5BOTgxMDQwMDk0OF5BMl5BanBnXkFtZTgwNjU1OTg2NDE@._V1_.jpg" alt="Inside Out">
             <div class="movie-card-overlay">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <p class="movie-card-title mb-0">Inside Out</p>
@@ -177,7 +200,7 @@
                 </div>
                 <p class="movie-card-meta mt-1">80% watched</p>
             </div>
-        </div>
+        </a>
 
     </div>
 </section>
