@@ -60,6 +60,50 @@ return [
             'report' => false,
         ],
 
+        // ── Supabase Storage — 3 dedicated disks (S3-compatible) ────────────────
+        // Credentials: Supabase Dashboard → Project Settings → Storage → S3 Connection
+        // All three disks share the same endpoint / key / secret / region.
+        // Only the 'bucket' name and 'visibility' differ per bucket.
+
+        'posters' => [
+            'driver'                  => 's3',
+            'key'                     => env('SUPABASE_STORAGE_KEY'),
+            'secret'                  => env('SUPABASE_STORAGE_SECRET'),
+            'region'                  => env('SUPABASE_STORAGE_BUCKET_REGION', 'us-east-1'),
+            'bucket'                  => 'posters',
+            'endpoint'                => env('SUPABASE_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility'              => 'public',
+            'throw'                   => true,
+            'report'                  => false,
+        ],
+
+        'videos' => [
+            'driver'                  => 's3',
+            'key'                     => env('SUPABASE_STORAGE_KEY'),
+            'secret'                  => env('SUPABASE_STORAGE_SECRET'),
+            'region'                  => env('SUPABASE_STORAGE_BUCKET_REGION', 'us-east-1'),
+            'bucket'                  => 'videos',
+            'endpoint'                => env('SUPABASE_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility'              => 'private',
+            'throw'                   => true,
+            'report'                  => false,
+        ],
+
+        'avatars' => [
+            'driver'                  => 's3',
+            'key'                     => env('SUPABASE_STORAGE_KEY'),
+            'secret'                  => env('SUPABASE_STORAGE_SECRET'),
+            'region'                  => env('SUPABASE_STORAGE_BUCKET_REGION', 'us-east-1'),
+            'bucket'                  => 'avatars',
+            'endpoint'                => env('SUPABASE_STORAGE_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'visibility'              => 'public',
+            'throw'                   => true,
+            'report'                  => false,
+        ],
+
     ],
 
     /*

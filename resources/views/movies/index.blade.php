@@ -20,7 +20,7 @@
     </button>
     <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-4 gap-2">
-            <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{{ route('home') }}">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Movies</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Kids</a></li>
@@ -30,7 +30,6 @@
             <i class="bi bi-bell fs-5" style="cursor:pointer;"></i>
 
             @auth
-                {{-- Authenticated: show name + logout --}}
                 <span class="text-white-50 small d-none d-lg-inline">
                     <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
                 </span>
@@ -43,7 +42,6 @@
                     </button>
                 </form>
             @else
-                {{-- Guest: show Sign In button --}}
                 <a href="{{ route('login') }}"
                    class="btn btn-sm"
                    style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
@@ -55,21 +53,21 @@
 </nav>
 
 <!-- ─────────────── Hero ─────────────── -->
-<section class="hero">
+@if($featured)
+<section class="hero" style="{{ $featured->backdrop_url ? 'background-image: linear-gradient(to right, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.15)), url('.e($featured->backdrop_url).');' : '' }}">
     <div class="container ps-4 ps-lg-5">
         <div class="col-lg-6">
             <p class="text-white-50 mb-1 small text-uppercase">Featured Film</p>
-            <h1 class="hero-title mb-3">Thearo, INC.</h1>
-            <p class="hero-desc mb-4">
-                Animated film that explores the world of Monstropolis,
-                where monsters generate their city's power by scaring children at night.
-            </p>
+            <h1 class="hero-title mb-3">{{ $featured->title }}</h1>
+            @if($featured->description)
+                <p class="hero-desc mb-4">{{ Str::limit($featured->description, 180) }}</p>
+            @endif
             <div class="d-flex gap-3 flex-wrap">
-                <a href="{{ route('movies.show', 'featured') }}"
+                <a href="{{ route('movies.show', $featured->slug) }}"
                    class="btn btn-watch d-flex align-items-center gap-2 text-decoration-none">
                     <i class="bi bi-play-fill"></i> Watch Now
                 </a>
-                <a href="{{ route('movies.show', 'featured') }}"
+                <a href="{{ route('movies.show', $featured->slug) }}"
                    class="btn btn-details d-flex align-items-center gap-2 text-decoration-none">
                     Details <i class="bi bi-chevron-right"></i>
                 </a>
@@ -77,140 +75,112 @@
         </div>
     </div>
 </section>
+@else
+{{-- Fallback hero when no movies are published yet --}}
+<section class="hero">
+    <div class="container ps-4 ps-lg-5">
+        <div class="col-lg-6">
+            <p class="text-white-50 mb-1 small text-uppercase">Welcome</p>
+            <h1 class="hero-title mb-3">Royal Reel Cinema</h1>
+            <p class="hero-desc mb-4">Your destination for great films. Check back soon for new releases.</p>
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- ─────────────── Genres ─────────────── -->
 <section class="py-4 px-4 px-lg-5">
     <div class="scroll-row">
-        <span class="genre-badge active">All</span>
-        <span class="genre-badge">Action</span>
-        <span class="genre-badge">Animation</span>
-        <span class="genre-badge">Comedy</span>
-        <span class="genre-badge">Drama</span>
-        <span class="genre-badge">Horror</span>
-        <span class="genre-badge">Sci-Fi</span>
-        <span class="genre-badge">Romance</span>
-        <span class="genre-badge">Thriller</span>
+        <span class="genre-badge active" data-genre="all">All</span>
+        @foreach($genres as $genre)
+            <span class="genre-badge" data-genre="{{ $genre->id }}">{{ $genre->name }}</span>
+        @endforeach
     </div>
 </section>
 
 <!-- ─────────────── Trending Movies ─────────────── -->
+@if($trending->isNotEmpty())
 <section class="pb-4 px-4 px-lg-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="section-title mb-0">Trending Movies</h2>
         <a href="#" class="text-white-50 small text-decoration-none">See all <i class="bi bi-chevron-right"></i></a>
     </div>
     <div class="scroll-row">
-
-        <a href="{{ route('movies.show', 'the-good-dinosaur') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BNDk3NjMwMDMtNDcwNC00NTkwLTk1ZTMtNGYwMzdmMzZlMzdjXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="The Good Dinosaur">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">The Good Dinosaur</p>
-                <p class="movie-card-meta">2015 · Animation</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'aladdin') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BOGJmNGM1ZmMtYjU3OS00OWYyLWE4ZWYtNTJmNjM2ZjBlMGFiXkEyXkFqcGc@._V1_.jpg" alt="Aladdin">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">Aladdin</p>
-                <p class="movie-card-meta">1992 · Animation</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'luca') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BZDJhNjI4ZGItOTM5Mi00YTQ4LWFlZmUtYTQ3OTI3ZGJmMWYyXkEyXkFqcGc@._V1_.jpg" alt="Luca">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">Luca</p>
-                <p class="movie-card-meta">2021 · Animation</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'tangled') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BMTkwMTc0ODYxNl5BMl5BanBnXkFtZTcwNDA3NzYxMw@@._V1_.jpg" alt="Tangled">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">Tangled</p>
-                <p class="movie-card-meta">2010 · Animation</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'coco') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BZjZhYzFiZTUtNTNjZi00YTI4LWE2ZTEtYThkNTA3NDFlMDkwXkEyXkFqcGc@._V1_.jpg" alt="Coco">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">Coco</p>
-                <p class="movie-card-meta">2017 · Animation</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'moana') }}" class="movie-card text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BNzgxMzc1MjYtZjMwZi00OGFmLTkwOWEtMWZkMmJhN2JmYWM1XkEyXkFqcGc@._V1_.jpg" alt="Moana">
-            <div class="movie-card-overlay">
-                <p class="movie-card-title">Moana</p>
-                <p class="movie-card-meta">2016 · Animation</p>
-            </div>
-        </a>
-
+        @foreach($trending as $movie)
+            <a href="{{ route('movies.show', $movie->slug) }}" class="movie-card text-decoration-none"
+               data-genres="{{ $movie->genres->pluck('id')->join(',') }}">
+                <img src="{{ $movie->poster_url ?? asset('images/poster-placeholder.svg') }}"
+                     alt="{{ e($movie->title) }}"
+                     loading="lazy"
+                     onerror="this.src='{{ asset('images/poster-placeholder.svg') }}'">
+                <div class="movie-card-overlay">
+                    <p class="movie-card-title">{{ $movie->title }}</p>
+                    <p class="movie-card-meta">
+                        {{ $movie->releaseYear() }}{{ $movie->releaseYear() && $movie->genreLabel() ? ' · ' : '' }}{{ $movie->genreLabel() }}
+                    </p>
+                </div>
+            </a>
+        @endforeach
     </div>
 </section>
+@endif
 
-<!-- ─────────────── Continue Watching ─────────────── -->
-<section class="pb-5 px-4 px-lg-5">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="section-title mb-0">Continue Watching</h2>
-        <a href="#" class="text-white-50 small text-decoration-none">See all <i class="bi bi-chevron-right"></i></a>
-    </div>
-    <div class="scroll-row">
-
-        <a href="{{ route('movies.show', 'finding-nemo') }}" class="movie-card card-lg text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BNWIyNmIxNWEtNmNhZC00ZjgwLWJhZWYtNTdjZjdmZmQ0NTUwXkEyXkFqcGc@._V1_.jpg" alt="Finding Nemo">
-            <div class="movie-card-overlay">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <p class="movie-card-title mb-0">Finding Nemo</p>
-                    <i class="bi bi-play-circle-fill"></i>
-                </div>
-                <div class="progress" style="height:3px; background:rgba(255,255,255,0.2);">
-                    <div class="progress-bar bg-white" style="width:65%;"></div>
-                </div>
-                <p class="movie-card-meta mt-1">65% watched</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'up') }}" class="movie-card card-lg text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BMDU2ZWJlMjktMTRhMy00ZTA5LWEzNDgtYmNmZTEwZTViZWJkXkEyXkFqcGc@._V1_.jpg" alt="Up">
-            <div class="movie-card-overlay">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <p class="movie-card-title mb-0">Up</p>
-                    <i class="bi bi-play-circle-fill"></i>
-                </div>
-                <div class="progress" style="height:3px; background:rgba(255,255,255,0.2);">
-                    <div class="progress-bar bg-white" style="width:30%;"></div>
-                </div>
-                <p class="movie-card-meta mt-1">30% watched</p>
-            </div>
-        </a>
-
-        <a href="{{ route('movies.show', 'inside-out') }}" class="movie-card card-lg text-decoration-none">
-            <img src="https://m.media-amazon.com/images/M/MV5BOTgxMDQwMDk0OF5BMl5BanBnXkFtZTgwNjU1OTg2NDE@._V1_.jpg" alt="Inside Out">
-            <div class="movie-card-overlay">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <p class="movie-card-title mb-0">Inside Out</p>
-                    <i class="bi bi-play-circle-fill"></i>
-                </div>
-                <div class="progress" style="height:3px; background:rgba(255,255,255,0.2);">
-                    <div class="progress-bar bg-white" style="width:80%;"></div>
-                </div>
-                <p class="movie-card-meta mt-1">80% watched</p>
-            </div>
-        </a>
-
-    </div>
-</section>
+<!-- ─────────────── Continue Watching (auth users only) ─────────────── -->
+@auth
+    @if($continueWatching->isNotEmpty())
+    <section class="pb-5 px-4 px-lg-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title mb-0">Continue Watching</h2>
+            <a href="#" class="text-white-50 small text-decoration-none">See all <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="scroll-row">
+            @foreach($continueWatching as $movie)
+                @php
+                    /** @var \App\Models\WatchHistory|null $history */
+                    $history = $movie->getRelation('userHistory');
+                    $percent = $history?->progressPercent();
+                @endphp
+                <a href="{{ route('movies.show', $movie->slug) }}" class="movie-card card-lg text-decoration-none">
+                    <img src="{{ $movie->poster_url ?? asset('images/poster-placeholder.svg') }}"
+                         alt="{{ e($movie->title) }}"
+                         loading="lazy"
+                         onerror="this.src='{{ asset('images/poster-placeholder.svg') }}'">
+                    <div class="movie-card-overlay">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <p class="movie-card-title mb-0">{{ $movie->title }}</p>
+                            <i class="bi bi-play-circle-fill"></i>
+                        </div>
+                        @if($percent !== null)
+                            <div class="progress" style="height:3px; background:rgba(255,255,255,0.2);">
+                                <div class="progress-bar bg-white" style="width:{{ $percent }}%;"></div>
+                            </div>
+                            <p class="movie-card-meta mt-1">{{ $percent }}% watched</p>
+                        @endif
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+    @endif
+@endauth
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Genre filter
     document.querySelectorAll('.genre-badge').forEach(badge => {
         badge.addEventListener('click', function () {
             document.querySelectorAll('.genre-badge').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+
+            const selected = this.dataset.genre;
+            document.querySelectorAll('.movie-card[data-genres]').forEach(card => {
+                if (selected === 'all') {
+                    card.style.display = '';
+                } else {
+                    const genres = card.dataset.genres ? card.dataset.genres.split(',') : [];
+                    card.style.display = genres.includes(selected) ? '' : 'none';
+                }
+            });
         });
     });
 </script>

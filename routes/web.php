@@ -4,11 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MovieController;
 use Illuminate\Support\Facades\Route;
 
-// ── Public routes ────────────────────────────────────────────────────────────
+// ── Public routes ─────────────────────────────────────────────────────────────
 
-Route::get('/', function () {
-    return view('movies.index');
-})->name('home');
+// Homepage — publicly accessible, no auth required
+Route::get('/', [MovieController::class, 'index'])->name('home');
 
 // Login / Register page (guests only)
 Route::middleware('guest')->group(function () {
@@ -22,8 +21,12 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// ── Protected routes ─────────────────────────────────────────────────────────
+// ── Protected routes ──────────────────────────────────────────────────────────
 
 Route::middleware('auth')->group(function () {
-    Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
+    // Movie detail / player page
+    Route::get('/movies/{slug}', [MovieController::class, 'show'])->name('movies.show');
+
+    // Signed video stream URL (called via JS fetch, returns JSON)
+    Route::get('/movies/{slug}/stream-url', [MovieController::class, 'streamUrl'])->name('movies.stream-url');
 });
