@@ -160,6 +160,11 @@
         @if(session('success'))
             <div class="alert-dark-success mb-3"><i class="bi bi-check-circle me-2"></i>{{ session('success') }}</div>
         @endif
+        @if(session('warning'))
+            <div class="alert-dark-error mb-3" style="background:rgba(255,193,7,0.12); border-color:rgba(255,193,7,0.3); color:#ffc107;">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ session('warning') }}
+            </div>
+        @endif
         @if(session('error'))
             <div class="alert-dark-error mb-3"><i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}</div>
         @endif

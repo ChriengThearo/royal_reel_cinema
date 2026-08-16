@@ -32,13 +32,13 @@ class MovieController extends Controller
 
     public function store(StoreMovieRequest $request)
     {
+        // ── Step 1: save metadata inside a transaction ────────────────────────
         DB::beginTransaction();
         try {
-            $data         = $request->validated();
-            $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+            $data             = $request->validated();
+            $data['slug']     = filled($data['slug'] ?? null) ? $data['slug'] : Str::slug($data['title']);
             $data['created_by'] = auth()->id();
 
-            // Remove non-column keys before creating the model
             $genreIds     = $data['genre_ids'] ?? [];
             $posterFile   = $request->file('poster');
             $videoFile    = $request->file('video');
@@ -49,20 +49,40 @@ class MovieController extends Controller
             $movie = Movie::create($data);
             $movie->genres()->sync($genreIds);
 
-            if ($posterFile) {
-                $posterUrl = $this->storage->uploadPoster($movie->id, $posterFile);
-                $movie->update(['poster_url' => $posterUrl]);
-            }
-            if ($videoFile) {
-                $this->storage->uploadVideo($movie->id, $videoQuality, $videoFile);
-            }
-
             DB::commit();
-            return redirect()->route('admin.movies.index')->with('success', "Movie \"{$movie->title}\" created.");
         } catch (\Throwable $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Failed to save movie: ' . $e->getMessage());
         }
+
+        // ── Step 2: attempt file uploads independently (don't block on failure) ─
+        $uploadWarnings = [];
+
+        if ($posterFile) {
+            try {
+                $posterUrl = $this->storage->uploadPoster($movie->id, $posterFile);
+                $movie->update(['poster_url' => $posterUrl]);
+            } catch (\Throwable $e) {
+                $uploadWarnings[] = 'Poster upload failed: ' . $e->getMessage();
+            }
+        }
+
+        if ($videoFile) {
+            try {
+                $this->storage->uploadVideo($movie->id, $videoQuality, $videoFile);
+            } catch (\Throwable $e) {
+                $uploadWarnings[] = 'Video upload failed: ' . $e->getMessage();
+            }
+        }
+
+        $message = "Movie \"{$movie->title}\" created.";
+        if ($uploadWarnings) {
+            return redirect()->route('admin.movies.index')
+                ->with('success', $message)
+                ->with('warning', implode(' | ', $uploadWarnings));
+        }
+
+        return redirect()->route('admin.movies.index')->with('success', $message);
     }
 
     public function edit(Movie $movie)
@@ -75,10 +95,11 @@ class MovieController extends Controller
 
     public function update(UpdateMovieRequest $request, Movie $movie)
     {
+        // ── Step 1: save metadata inside a transaction ────────────────────────
         DB::beginTransaction();
         try {
             $data         = $request->validated();
-            $data['slug'] = $data['slug'] ?? Str::slug($data['title']);
+            $data['slug'] = filled($data['slug'] ?? null) ? $data['slug'] : Str::slug($data['title']);
 
             $genreIds     = $data['genre_ids'] ?? [];
             $posterFile   = $request->file('poster');
@@ -90,20 +111,40 @@ class MovieController extends Controller
             $movie->update($data);
             $movie->genres()->sync($genreIds);
 
-            if ($posterFile) {
-                $posterUrl = $this->storage->uploadPoster($movie->id, $posterFile);
-                $movie->update(['poster_url' => $posterUrl]);
-            }
-            if ($videoFile) {
-                $this->storage->uploadVideo($movie->id, $videoQuality, $videoFile);
-            }
-
             DB::commit();
-            return redirect()->route('admin.movies.index')->with('success', "Movie \"{$movie->title}\" updated.");
         } catch (\Throwable $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Failed to update movie: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to save movie: ' . $e->getMessage());
         }
+
+        // ── Step 2: attempt file uploads independently (don't block on failure) ─
+        $uploadWarnings = [];
+
+        if ($posterFile) {
+            try {
+                $posterUrl = $this->storage->uploadPoster($movie->id, $posterFile);
+                $movie->update(['poster_url' => $posterUrl]);
+            } catch (\Throwable $e) {
+                $uploadWarnings[] = 'Poster upload failed: ' . $e->getMessage();
+            }
+        }
+
+        if ($videoFile) {
+            try {
+                $this->storage->uploadVideo($movie->id, $videoQuality, $videoFile);
+            } catch (\Throwable $e) {
+                $uploadWarnings[] = 'Video upload failed: ' . $e->getMessage();
+            }
+        }
+
+        $message = "Movie \"{$movie->title}\" updated.";
+        if ($uploadWarnings) {
+            return redirect()->route('admin.movies.index')
+                ->with('success', $message)
+                ->with('warning', implode(' | ', $uploadWarnings));
+        }
+
+        return redirect()->route('admin.movies.index')->with('success', $message);
     }
 
     public function destroy(Movie $movie)
