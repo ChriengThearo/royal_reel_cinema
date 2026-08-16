@@ -74,6 +74,11 @@ class AuthController extends Controller
             'password' => $validated['password'],
         ]);
 
+        $userRole = \App\Models\Role::where('name', 'user')->first();
+        if ($userRole) {
+            $user->roles()->attach($userRole->id);
+        }
+
         Auth::login($user);
         $request->session()->regenerate();
 

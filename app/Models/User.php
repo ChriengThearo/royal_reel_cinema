@@ -70,4 +70,16 @@ class User extends Authenticatable
             ->latest('end_date')
             ->first();
     }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function hasPermission(string $code): bool
+    {
+        return $this->roles()
+            ->whereHas('permissions', fn ($q) => $q->where('code', $code))
+            ->exists();
+    }
 }

@@ -33,6 +33,13 @@
                 <span class="text-white-50 small d-none d-lg-inline">
                     <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
                 </span>
+                @if(Auth::user()->hasRole('admin'))
+                    <a href="{{ route('admin.dashboard') }}"
+                       class="btn btn-sm"
+                       style="background:rgba(255,215,0,0.15); color:rgba(255,215,0,0.9); border:1px solid rgba(255,215,0,0.3); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
+                        <i class="bi bi-shield-lock me-1"></i>Admin
+                    </a>
+                @endif
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
                     <button type="submit"

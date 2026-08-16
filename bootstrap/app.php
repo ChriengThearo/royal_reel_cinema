@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Redirect unauthenticated requests to /login
         $middleware->redirectGuestsTo('/login');
+
+        $middleware->alias(['role' => \App\Http\Middleware\EnsureUserHasRole::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
