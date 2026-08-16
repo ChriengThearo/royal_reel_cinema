@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WatchHistory extends Model
 {
+    // Explicit table name — Laravel would guess 'watch_histories' by default.
+    protected $table = 'watch_history';
+
     // Only last_watched_at, no updated_at
     public $timestamps = false;
 
