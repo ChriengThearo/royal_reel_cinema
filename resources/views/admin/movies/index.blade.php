@@ -4,7 +4,18 @@
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <span style="color:rgba(255,255,255,0.4); font-size:0.85rem;">{{ $movies->total() }} movies total</span>
+    <div class="d-flex align-items-center gap-2">
+        <span style="color:rgba(255,255,255,0.4); font-size:0.85rem;">{{ $movies->total() }} movies total</span>
+        <form action="{{ route('admin.movies.sample-import') }}" method="POST" class="d-inline ms-2"
+              onsubmit="return confirm('Import a sample short film into Supabase Storage (videos bucket)?')">
+            @csrf
+            <input type="hidden" name="title" value="Sample Short Film">
+            <input type="hidden" name="quality" value="720p">
+            <button type="submit" class="btn btn-admin-ghost">
+                <i class="bi bi-cloud-arrow-up me-1"></i> Import Sample Film
+            </button>
+        </form>
+    </div>
     <a href="{{ route('admin.movies.create') }}" class="btn btn-admin-primary">
         <i class="bi bi-plus-lg me-1"></i> Add Movie
     </a>
@@ -62,7 +73,14 @@
                 @empty
                 <tr>
                     <td colspan="6" style="text-align:center; color:rgba(255,255,255,0.3); padding:2.5rem;">
-                        No movies yet. <a href="{{ route('admin.movies.create') }}" style="color:#fff;">Add one.</a>
+                        No movies yet.
+                        <form action="{{ route('admin.movies.sample-import') }}" method="POST" class="d-inline ms-1">
+                          @csrf
+                          <input type="hidden" name="title" value="Sample Short Film">
+                          <input type="hidden" name="quality" value="720p">
+                          <button type="submit" class="btn btn-admin-ghost">Import a sample</button>
+                        </form>
+                        or <a href="{{ route('admin.movies.create') }}" style="color:#fff;">add one</a>.
                     </td>
                 </tr>
                 @endforelse

@@ -25,35 +25,24 @@
             <li class="nav-item"><a class="nav-link" href="#">Series</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Kids</a></li>
         </ul>
-        <div class="ms-auto d-flex align-items-center gap-3">
-            <i class="bi bi-search fs-5" style="cursor:pointer;"></i>
-            <i class="bi bi-bell fs-5" style="cursor:pointer;"></i>
 
+        <!-- Top-right action cluster (search, bell, sign in) -->
+        <div class="ms-auto action-cluster">
+            <button class="icon-btn" aria-label="Search"><i class="bi bi-search fs-6"></i></button>
+            <span class="action-divider" aria-hidden="true"></span>
+            <button class="icon-btn" aria-label="Notifications"><i class="bi bi-bell fs-6"></i></button>
+            <span class="action-divider" aria-hidden="true"></span>
             @auth
-                <span class="text-white-50 small d-none d-lg-inline">
-                    <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
-                </span>
+                <span class="text-white small ps-1 pe-2 d-none d-lg-inline" aria-label="Signed in user"><i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}</span>
                 @if(Auth::user()->hasRole('admin'))
-                    <a href="{{ route('admin.dashboard') }}"
-                       class="btn btn-sm"
-                       style="background:rgba(255,215,0,0.15); color:rgba(255,215,0,0.9); border:1px solid rgba(255,215,0,0.3); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
-                        <i class="bi bi-shield-lock me-1"></i>Admin
-                    </a>
+                    <a href="{{ route('admin.dashboard') }}" class="action-link"><i class="bi bi-shield-lock me-1"></i>Admin</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
-                    <button type="submit"
-                            class="btn btn-sm"
-                            style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
-                        Sign Out
-                    </button>
+                    <button type="submit" class="action-link">Sign Out</button>
                 </form>
             @else
-                <a href="{{ route('login') }}"
-                   class="btn btn-sm"
-                   style="background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:50px; font-size:0.8rem; padding:0.3rem 1rem;">
-                    <i class="bi bi-person me-1"></i>Sign In
-                </a>
+                <a href="{{ route('login') }}" class="action-link"><i class="bi bi-person me-1"></i>Sign In</a>
             @endauth
         </div>
     </div>
@@ -61,21 +50,44 @@
 
 <!-- ─────────────── Hero ─────────────── -->
 @if($featured)
-<section class="hero" style="{{ $featured->backdrop_url ? 'background-image: linear-gradient(to right, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.15)), url('.e($featured->backdrop_url).');' : '' }}">
-    <div class="container ps-4 ps-lg-5">
-        <div class="col-lg-6">
-            <p class="text-white-50 mb-1 small text-uppercase">Featured Film</p>
-            <h1 class="hero-title mb-3">{{ $featured->title }}</h1>
+<section class="hero" style="{{ $featured->backdrop_url ? 'background-image: url('.e($featured->backdrop_url).');' : '' }}">
+    <div class="container ps-4 ps-lg-5 hero-inner">
+        <!-- Optional poster: render only when we have art; otherwise the grid adapts -->
+        @if(!empty($featured->poster_url))
+            <div class="hero-poster d-none d-lg-block">
+                <img src="{{ $featured->poster_url }}" alt="Poster: {{ e($featured->title) }}">
+            </div>
+        @endif
+
+        <div class="col-lg-8 col-xl-7">
+            <p class="hero-kicker mb-2">FEATURED FILM</p>
+            <h1 class="hero-title mb-2">{{ $featured->title }}</h1>
             @if($featured->description)
-                <p class="hero-desc mb-4">{{ Str::limit($featured->description, 180) }}</p>
+                <p class="hero-desc">{{ Str::limit($featured->description, 180) }}</p>
             @endif
-            <div class="d-flex gap-3 flex-wrap">
+
+            <!-- Metadata row: rating • duration • genres -->
+            <div class="hero-meta" aria-label="Film details">
+                @if(!empty($featured->rating))
+                    <span class="meta-badge rating" title="Rating">{{ $featured->rating }}</span>
+                    <span class="meta-sep">•</span>
+                @endif
+                @if(!empty($featured->runtime_minutes))
+                    <span class="meta-item">{{ floor($featured->runtime_minutes / 60) }}h {{ $featured->runtime_minutes % 60 }}m</span>
+                    <span class="meta-sep">•</span>
+                @endif
+                @if($featured->genres && $featured->genres->isNotEmpty())
+                    <span class="meta-item">{{ $featured->genres->take(2)->pluck('name')->join(' · ') }}</span>
+                @endif
+            </div>
+
+            <div class="d-flex gap-3 flex-wrap mb-4">
                 <a href="{{ route('movies.show', $featured->slug) }}"
-                   class="btn btn-watch d-flex align-items-center gap-2 text-decoration-none">
+                   class="btn-watch text-decoration-none" aria-label="Watch Now: {{ e($featured->title) }}">
                     <i class="bi bi-play-fill"></i> Watch Now
                 </a>
                 <a href="{{ route('movies.show', $featured->slug) }}"
-                   class="btn btn-details d-flex align-items-center gap-2 text-decoration-none">
+                   class="btn-details text-decoration-none" aria-label="View details: {{ e($featured->title) }}">
                     Details <i class="bi bi-chevron-right"></i>
                 </a>
             </div>
@@ -85,11 +97,15 @@
 @else
 {{-- Fallback hero when no movies are published yet --}}
 <section class="hero">
-    <div class="container ps-4 ps-lg-5">
-        <div class="col-lg-6">
-            <p class="text-white-50 mb-1 small text-uppercase">Welcome</p>
-            <h1 class="hero-title mb-3">Royal Reel Cinema</h1>
-            <p class="hero-desc mb-4">Your destination for great films. Check back soon for new releases.</p>
+    <div class="container ps-4 ps-lg-5 hero-inner">
+        <div class="col-lg-8 col-xl-7">
+            <p class="hero-kicker mb-2">WELCOME</p>
+            <h1 class="hero-title mb-2">Royal Reel Cinema</h1>
+            <p class="hero-desc">Your destination for great films. Check back soon for new releases.</p>
+            <div class="d-flex gap-3 flex-wrap mb-4">
+                <a href="#" class="btn-watch text-decoration-none"><i class="bi bi-play-fill"></i> Explore</a>
+                <a href="#" class="btn-details text-decoration-none">Browse <i class="bi bi-chevron-right"></i></a>
+            </div>
         </div>
     </div>
 </section>
@@ -97,10 +113,10 @@
 
 <!-- ─────────────── Genres ─────────────── -->
 <section class="py-4 px-4 px-lg-5">
-    <div class="scroll-row">
-        <span class="genre-badge active" data-genre="all">All</span>
+    <div class="scroll-row" role="tablist" aria-label="Browse by genre">
+        <span class="genre-badge active" role="tab" aria-selected="true" tabindex="0" data-genre="all">All</span>
         @foreach($genres as $genre)
-            <span class="genre-badge" data-genre="{{ $genre->id }}">{{ $genre->name }}</span>
+            <span class="genre-badge" role="tab" aria-selected="false" tabindex="-1" data-genre="{{ $genre->id }}">{{ $genre->name }}</span>
         @endforeach
     </div>
 </section>
@@ -157,11 +173,10 @@
                             <p class="movie-card-title mb-0">{{ $movie->title }}</p>
                             <i class="bi bi-play-circle-fill"></i>
                         </div>
-                        @if($percent !== null)
-                            <div class="progress" style="height:3px; background:rgba(255,255,255,0.2);">
-                                <div class="progress-bar bg-white" style="width:{{ $percent }}%;"></div>
+                        @if($percent)
+                            <div class="progress" style="height: 4px; background: rgba(255,255,255,0.18);">
+                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $percent }}%"></div>
                             </div>
-                            <p class="movie-card-meta mt-1">{{ $percent }}% watched</p>
                         @endif
                     </div>
                 </a>
@@ -173,23 +188,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Genre filter
-    document.querySelectorAll('.genre-badge').forEach(badge => {
-        badge.addEventListener('click', function () {
-            document.querySelectorAll('.genre-badge').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-
-            const selected = this.dataset.genre;
-            document.querySelectorAll('.movie-card[data-genres]').forEach(card => {
-                if (selected === 'all') {
-                    card.style.display = '';
-                } else {
-                    const genres = card.dataset.genres ? card.dataset.genres.split(',') : [];
-                    card.style.display = genres.includes(selected) ? '' : 'none';
-                }
-            });
-        });
+  // Genre pills: active state toggle for prototype; integrate with filtering as needed
+  document.querySelectorAll('.genre-badge').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.genre-badge').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      document.querySelectorAll('.genre-badge').forEach(p => {
+        p.setAttribute('aria-selected', p === pill ? 'true' : 'false');
+        p.setAttribute('tabindex', p === pill ? '0' : '-1');
+      });
     });
+  });
 </script>
 </body>
 </html>

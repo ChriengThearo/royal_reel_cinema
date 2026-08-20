@@ -33,6 +33,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::delete('movies/{movie}/videos/{asset}', [Admin\MovieController::class, 'destroyVideo'])
         ->name('movies.videos.destroy');
 
+    // Utility endpoint to import a sample film into Supabase Storage (videos bucket)
+    Route::post('movies/sample-import', [Admin\MovieController::class, 'importSample'])
+        ->name('movies.sample-import');
+
     Route::resource('genres', Admin\GenreController::class);
     Route::resource('plans', Admin\PlanController::class);
 

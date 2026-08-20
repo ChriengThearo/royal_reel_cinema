@@ -6,6 +6,7 @@ use App\Models\Movie;
 use App\Models\User;
 use App\Models\VideoAsset;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -22,7 +23,10 @@ class SupabaseStorageService
     {
         $path = "{$movieId}.jpg";
 
-        Storage::disk('posters')->put($path, $file->getContent(), 'public');
+        Storage::disk('posters')->put($path, $file->getContent(), [
+            'visibility'  => 'public',
+            'ContentType' => $file->getMimeType() ?? 'image/jpeg',
+        ]);
 
         return Storage::disk('posters')->url($path);
     }
@@ -39,7 +43,10 @@ class SupabaseStorageService
     {
         $path = "backdrops/{$movieId}.jpg";
 
-        Storage::disk('posters')->put($path, $file->getContent(), 'public');
+        Storage::disk('posters')->put($path, $file->getContent(), [
+            'visibility'  => 'public',
+            'ContentType' => $file->getMimeType() ?? 'image/jpeg',
+        ]);
 
         return Storage::disk('posters')->url($path);
     }
@@ -53,7 +60,10 @@ class SupabaseStorageService
     {
         $path = "{$userId}.jpg";
 
-        Storage::disk('avatars')->put($path, $file->getContent(), 'public');
+        Storage::disk('avatars')->put($path, $file->getContent(), [
+            'visibility'  => 'public',
+            'ContentType' => $file->getMimeType() ?? 'image/jpeg',
+        ]);
 
         return Storage::disk('avatars')->url($path);
     }
@@ -68,7 +78,13 @@ class SupabaseStorageService
         $path   = "{$movieId}/{$quality}.mp4";
         $sizeMb = (int) ceil($file->getSize() / 1_048_576);
 
-        Storage::disk('videos')->put($path, $file->getContent(), 'private');
+        // Explicit options help with S3-compatible endpoints
+        $options = [
+            'visibility'  => 'private',
+            'ContentType' => $file->getMimeType() ?? 'video/mp4',
+        ];
+
+        Storage::disk('videos')->put($path, $file->getContent(), $options);
 
         return VideoAsset::updateOrCreate(
             ['movie_id' => $movieId, 'quality' => $quality],
