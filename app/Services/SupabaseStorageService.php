@@ -78,13 +78,24 @@ class SupabaseStorageService
         $path   = "{$movieId}/{$quality}.mp4";
         $sizeMb = (int) ceil($file->getSize() / 1_048_576);
 
+        // Supabase Storage rejects overwriting an existing object via multipart upload.
+        // Delete the old file first so the upload always starts fresh.
+        if (Storage::disk('videos')->exists($path)) {
+            Storage::disk('videos')->delete($path);
+        }
+
         // Explicit options help with S3-compatible endpoints
         $options = [
             'visibility'  => 'private',
             'ContentType' => $file->getMimeType() ?? 'video/mp4',
         ];
 
-        Storage::disk('videos')->put($path, $file->getContent(), $options);
+        // Stream the file instead of loading it entirely into memory
+        $stream = fopen($file->getRealPath(), 'rb');
+        Storage::disk('videos')->put($path, $stream, $options);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
 
         return VideoAsset::updateOrCreate(
             ['movie_id' => $movieId, 'quality' => $quality],
