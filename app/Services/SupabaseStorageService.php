@@ -12,6 +12,20 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class SupabaseStorageService
 {
+    /**
+     * Build the Supabase public CDN URL for a file in a public bucket.
+     * Format: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{path}
+     */
+    private function publicUrl(string $bucket, string $path): string
+    {
+        // Derive the project base URL from the S3 endpoint.
+        // SUPABASE_STORAGE_ENDPOINT = https://{ref}.supabase.co/storage/v1/s3
+        // Public CDN base           = https://{ref}.supabase.co/storage/v1/object/public
+        $endpoint = rtrim(config('filesystems.disks.' . $bucket . '.endpoint'), '/');
+        $base     = preg_replace('#/s3$#', '', $endpoint); // strip trailing /s3
+        return "{$base}/object/public/{$bucket}/{$path}";
+    }
+
     // ── Upload helpers ────────────────────────────────────────────────────────
 
     /**
@@ -28,7 +42,7 @@ class SupabaseStorageService
             'ContentType' => $file->getMimeType() ?? 'image/jpeg',
         ]);
 
-        return Storage::disk('posters')->url($path);
+        return $this->publicUrl('posters', $path);
     }
 
     /**
@@ -48,7 +62,7 @@ class SupabaseStorageService
             'ContentType' => $file->getMimeType() ?? 'image/jpeg',
         ]);
 
-        return Storage::disk('posters')->url($path);
+        return $this->publicUrl('posters', $path);
     }
 
     /**
@@ -65,7 +79,7 @@ class SupabaseStorageService
             'ContentType' => $file->getMimeType() ?? 'image/jpeg',
         ]);
 
-        return Storage::disk('avatars')->url($path);
+        return $this->publicUrl('avatars', $path);
     }
 
     /**
