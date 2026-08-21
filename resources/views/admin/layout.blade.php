@@ -106,7 +106,7 @@
 {{-- ─────────────── Sidebar ─────────────── --}}
 <nav id="sidebar">
     <a class="sidebar-brand" href="{{ route('admin.dashboard') }}">
-        <i class="bi bi-film me-1"></i>RoyalReel
+        <img src="{{ asset('images/movie_logo.png') }}" alt="RoyalReel" style="height:32px; width:auto;">
         <small>Admin Panel</small>
     </a>
     <div class="sidebar-nav">

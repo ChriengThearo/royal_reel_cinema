@@ -13,7 +13,7 @@
 <!-- ─────────────── Navbar ─────────────── -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 z-3 px-4 px-lg-5 pt-3">
     <a class="navbar-brand" href="{{ route('home') }}">
-        <span><i class="bi bi-film me-1"></i>RoyalReel</span>
+        <img src="{{ asset('images/movie_logo.png') }}" alt="RoyalReel" style="height:38px; width:auto;">
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
         <span class="navbar-toggler-icon"></span>
