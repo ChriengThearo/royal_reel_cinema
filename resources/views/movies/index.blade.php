@@ -11,7 +11,7 @@
 <body>
 
 <!-- ─────────────── Navbar ─────────────── -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 z-3 px-4 px-lg-5 pt-3">
+<nav class="navbar navbar-expand-lg navbar-dark position-sticky top-0 z-3 px-4 px-lg-5 py-2" style="background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.06);">
     <a class="navbar-brand" href="{{ route('home') }}">
         <img src="{{ asset('images/movie_logo.png') }}" alt="RoyalReel" style="height:38px; width:auto;">
     </a>
@@ -39,7 +39,7 @@
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="d-inline">
                     @csrf
-                    <button type="submit" class="action-link">Sign Out</button>
+                    <button type="submit" class="action-link" style="background:#000; color:#fff; border:1px solid rgba(255,255,255,0.2); border-radius:999px; padding:6px 14px;">Sign Out</button>
                 </form>
             @else
                 <a href="{{ route('login') }}" class="action-link"><i class="bi bi-person me-1"></i>Sign In</a>
@@ -50,7 +50,7 @@
 
 <!-- ─────────────── Hero ─────────────── -->
 @if($featured)
-<section class="hero" style="{{ $featured->backdrop_url ? 'background-image: url('.e($featured->backdrop_url).');' : '' }}">
+<section class="hero" style="{{ $featured->backdrop_url ? 'background-image: url('.e($featured->backdrop_url).');' : 'background-image: url(\''.asset('images/movie_background.png').'\');' }}">
     <div class="container ps-4 ps-lg-5 hero-inner">
         <!-- Optional poster: render only when we have art; otherwise the grid adapts -->
         @if(!empty($featured->poster_url))
@@ -96,7 +96,7 @@
 </section>
 @else
 {{-- Fallback hero when no movies are published yet --}}
-<section class="hero">
+<section class="hero" style="background-image: url('{{ asset('images/movie_background.png') }}');">
     <div class="container ps-4 ps-lg-5 hero-inner">
         <div class="col-lg-8 col-xl-7">
             <p class="hero-kicker mb-2">WELCOME</p>

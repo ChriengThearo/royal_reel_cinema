@@ -142,7 +142,7 @@
 <body>
 
 {{-- ─────────────── Navbar ─────────────── --}}
-<nav class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 z-3 px-4 px-lg-5 pt-3">
+<nav class="navbar navbar-expand-lg navbar-dark position-sticky top-0 z-3 px-4 px-lg-5 py-2" style="background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(255,255,255,0.06);">
     <a class="navbar-brand" href="{{ route('home') }}">
         <img src="{{ asset('images/movie_logo.png') }}" alt="RoyalReel" style="height:38px; width:auto;">
     </a>

@@ -77,10 +77,15 @@ body {
 .hero {
     position: relative;
     min-height: 88vh;
-    background: #000 center/cover no-repeat;
+    background: url('/images/movie_background.png') center/cover no-repeat;
     display: flex;
     align-items: center;
     isolation: isolate; /* ensure overlay stacking */
+}
+/* Base dark overlay — dims background to ~70% visibility */
+.hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: rgba(0, 0, 0, 0.50);
 }
 /* Strong left-to-right scrim for contrast, regardless of image */
 .hero::after {
